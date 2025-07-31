@@ -5,12 +5,15 @@
 #include <iostream>
 #include <unordered_map>
 
-enum keys;
-enum actions;
+enum class Keys;
+enum class KeyActions;
 
-std::unordered_map<keys,bool> key_states;
+enum class MouseButtons;
+enum class MouseActions;
+
+std::unordered_map<Keys,bool> key_states;
 
 void set_raw_mode();
 void process_input();
 
-void (*keyCallback)(actions,keys);
+void (*keyCallback)(KeyActions,Keys);

@@ -3,11 +3,11 @@
 
 bool shouldExit = false;
 
-void onkey(actions action, keys key) {
-	if (action == actions::REPEAT) return;
+void onkey(KeyActions action, Keys key) {
+	if (action == KeyActions::REPEAT) return;
 
-	std::cout << key << "\n";
-	std::cout << (action == actions::PRESS ? "Key was pressed." : "Key was released.") << "\n";
+	std::cout << static_cast<unsigned int>(key) << "\n";
+	std::cout << (action == KeyActions::PRESS ? "Key was pressed." : "Key was released.") << "\n";
 };
 
 int main() {
