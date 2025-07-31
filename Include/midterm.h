@@ -13,4 +13,4 @@ std::unordered_map<keys,bool> key_states;
 void set_raw_mode();
 void process_input();
 
-void (*keyCallback)(unsigned int,unsigned int);
+void (*keyCallback)(actions,keys);

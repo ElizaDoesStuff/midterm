@@ -3,7 +3,7 @@
 
 bool shouldExit = false;
 
-void onkey(unsigned int action, unsigned int key) {
+void onkey(actions action, keys key) {
 	if (action == actions::REPEAT) return;
 
 	std::cout << key << "\n";
