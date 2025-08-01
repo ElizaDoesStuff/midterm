@@ -5,7 +5,7 @@ enum class Keys {
 	SHIFT, 
 	CTRL, 
 	ALT, 
-	CTRLC, BREAK, ESC, 
+	EXIT, BREAK, ESC, 
 	PGUP, PGDOWN, END, HOME, 
 	LEFT, RIGHT, UP, DOWN, 
 	SELECT, PRINT, 
@@ -27,19 +27,7 @@ enum class KeyActions {
 	REPEAT
 };
 
-enum class MouseButtons {
-	NA,
-	LEFT,
-	RIGHT,
-	MIDDLE
-};
-
-enum class MouseActions {
-	CLICK,
-	RELEASE,
-	SCROLL,
-	MOVE
-};
+static KeyCallback keyCallback;
 
 #ifdef _WIN32
 
@@ -48,7 +36,7 @@ std::unordered_map<WORD, Keys> keyCodeMap = {
 	{VK_SHIFT, Keys::SHIFT}, {VK_LSHIFT, Keys::SHIFT}, {VK_RSHIFT, Keys::SHIFT}, 
 	{VK_CONTROL, Keys::CTRL}, {VK_LCONTROL, Keys::CTRL}, {VK_RCONTROL, Keys::CTRL}, 
 	{VK_MENU, Keys::ALT}, {VK_LMENU, Keys::ALT}, {VK_RMENU, Keys::ALT}, 
-	{VK_CANCEL, Keys::CTRLC}, {VK_PAUSE, Keys::BREAK}, {VK_ESCAPE, Keys::ESC}, 
+	{VK_CANCEL, Keys::EXIT}, {VK_PAUSE, Keys::BREAK}, {VK_ESCAPE, Keys::ESC}, 
 	{VK_PRIOR, Keys::PGUP}, {VK_NEXT, Keys::PGDOWN}, {VK_END, Keys::END}, {VK_HOME, Keys::HOME}, 
 	{VK_LEFT, Keys::LEFT}, {VK_RIGHT, Keys::RIGHT}, {VK_UP, Keys::UP}, {VK_DOWN, Keys::DOWN}, 
 	{VK_SELECT, Keys::SELECT}, {VK_PRINT, Keys::PRINT}, 
@@ -68,11 +56,18 @@ void* stdinHandle = GetStdHandle(STD_INPUT_HANDLE);
 void* stdoutHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 void set_raw_mode() {
-	SetConsoleMode(stdinHandle, ENABLE_VIRTUAL_TERMINAL_PROCESSING | ENABLE_PROCESSED_INPUT); 
+	if ( !SetConsoleMode(stdinHandle, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT) ) {
+		std::cerr << "MIDTERM: Could not set raw mode properly." << std::endl;
+	};
+}
+
+void set_key_callback(KeyCallback callback) {
+	keyCallback = callback;
 }
 
 void handle_key_event(KEY_EVENT_RECORD event) {
 	if (keyCallback == nullptr) return;
+
 	KeyActions action;
 	if (event.wRepeatCount > 1) {
 		action = KeyActions::REPEAT;
@@ -81,12 +76,17 @@ void handle_key_event(KEY_EVENT_RECORD event) {
 	} else {
 		action = KeyActions::RELEASE;
 	}
-	keyCallback(action, keyCodeMap[event.wVirtualKeyCode]);
-}
+	
+	KeyFlags flags = 0;
+	flags |= 0b1000000 * (event.dwControlKeyState & LEFT_CTRL_PRESSED);
+	flags |= 0b0100000 * (event.dwControlKeyState & RIGHT_CTRL_PRESSED);
+	flags |= 0b0010000 * (event.dwControlKeyState & LEFT_ALT_PRESSED);
+	flags |= 0b0001000 * (event.dwControlKeyState & RIGHT_ALT_PRESSED);
+	flags |= 0b0000100 * (event.dwControlKeyState & CAPSLOCK_ON);
+	flags |= 0b0000010 * (event.dwControlKeyState & NUMLOCK_ON);
+	flags |= 0b0000001 * (event.dwControlKeyState & SCROLLLOCK_ON);
 
-void handle_mouse_event(MOUSE_EVENT_RECORD event) {
-	if (keyCallback == nullptr) return;
-	MouseActions action;
+	keyCallback(action, keyCodeMap[event.wVirtualKeyCode], flags);
 }
 
 void process_input() {
@@ -98,7 +98,7 @@ void process_input() {
 		INPUT_RECORD event = eventBuffer[i];
 		switch (event.EventType) {
 			case KEY_EVENT: handle_key_event(event.Event.KeyEvent); break;
-			case MOUSE_EVENT: handle_mouse_event(event.Event.MouseEvent);
+			case MOUSE_EVENT: break;
 		}
 	}
 }
