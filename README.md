@@ -11,6 +11,23 @@ Linux: 🟥
 
 MacOS: 🟥
 
+## Installation
+
+1. Download the latest release off of Github
+2. Extract the "Midterm" folder
+3. Place it in the dependencies folder of your project
+5. [Build using CMake](#building-with-cmake) or use some other method
+
+### Building with CMake
+Since CMake is weirdly confusing for beginners, I'll also explain how you can use it to compile Midterm and use it in your project.
+In your CMakeLists.txt, add the following line, somewhere between your `project()` call and your `add_executable()` call:
+
+`add_subdirectory(<your dependencies folder>/Midterm)`
+
+Then, after your call to `add_executable()`, add this line:
+
+`target_link_libraries(<your project name> midterm)`
+
 ## How to use Midterm
 
 ### Initialization
