@@ -26,7 +26,7 @@ In your CMakeLists.txt, add the following line, somewhere between your `project(
 
 Then, after your call to `add_executable()`, add this line:
 
-`target_link_libraries(<your project name> midterm)`
+`target_link_libraries(<your executable name> midterm)`
 
 ## How to use Midterm
 
