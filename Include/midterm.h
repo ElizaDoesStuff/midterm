@@ -5,13 +5,12 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <string>
 
 enum class Keys;
 enum class KeyActions;
 typedef unsigned char KeyFlags;
 typedef void (*KeyCallback)(KeyActions,Keys,KeyFlags);
-
-std::unordered_map<Keys,bool> key_states;
 
 void set_raw_mode();
 void process_input();
