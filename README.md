@@ -117,6 +117,7 @@ The KeyActions enum contains contains enumerators for different type of keyboard
 The Keys enum contains all of the different keys that can be pressed. When a key callback is called, it is provided with the name of the key that was pressed as one of these values.
 
 **Contents**
+
 `SPACE` - Spacebar
 
 `CLEAR` - "Clear" key
@@ -226,13 +227,21 @@ This enum\* contains a bunch of `unsigned char`s that have a specific bit set to
 corresponding to a given flag in the [KeyFlags](#keyflags) flagset.
 
 **Contents**
+
 `CTRL` - **Ctrl** key state
+
 `SHIFT` - Shift** key state
+
 `ALT` - **Alt** key state
+
 `CAPSLOCK` - **Caps Lock** state
+
 `NUMLOCK` - **Num Lock** state
+
 `INSERT` - **Insert mode** state
+
 `SIDE` - Which side the key was on (if applicable) - 0 is left, 1 is right
+
 `SIDED` - Whether or not the key side matters - always 1 for keys which appear on both sides of the keyboard, otherwise 0
 
 \* *Technically* it's not actually an enum but a namespace with a bunch of `constexpr`s because `enum class` has issues with operators, but let's not fret about the details :)
