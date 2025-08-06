@@ -234,3 +234,5 @@ corresponding to a given flag in the [KeyFlags](#keyflags) flagset.
 `INSERT` - **Insert mode** state
 `SIDE` - Which side the key was on (if applicable) - 0 is left, 1 is right
 `SIDED` - Whether or not the key side matters - always 1 for keys which appear on both sides of the keyboard, otherwise 0
+
+\* *Technically* it's not actually an enum but a namespace with a bunch of `constexpr`s because `enum class` has issues with operators, but let's not fret about the details :)
