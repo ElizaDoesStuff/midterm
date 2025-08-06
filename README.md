@@ -92,14 +92,16 @@ You can set a key callback function to be used with [set_key_callback](#set_key_
 `typedef unsigned char KeyFlags` - 
 a key flags object is a collection of bits that communicates which of the control keys were pressed when a key event occurred.
 They are stored in the following order, from most to least significant:
-1. **Left Control** key state
-2. **Right Control** key state
-3. **Left Alt** key state
-4. **Right Alt** key state
-5. **Shift** key state
-6. **Caps Lock** state
-7. **Num Lock** state
-8. **Scroll Lock** state
+1. **Ctrl** key state
+2. **Shift** key state
+3. **Alt** key state
+4. **Caps Lock** state
+5. **Num Lock** state
+6. **Insert mode** state
+7. Which side the key was on (if applicable) - 0 is left, 1 is right
+8. Whether or not the key side matters - always 1 for keys which appear on both sides of the keyboard, otherwise 0
+
+You can also select a one or more flags using the [KeyFlagBits](#keyflagbits) enum combined via the Bitwise OR (`|`) operator.
 
 ## Enums
 
@@ -218,3 +220,17 @@ The Keys enum contains all of the different keys that can be pressed. When a key
 `BACKSLASH` - Backslash/pipe key ("\\|")
 
 `APOSTROPHE` - Apostrophe/double quote key ("'\"")
+
+#### KeyFlagBits
+This enum\* contains a bunch of `unsigned char`s that have a specific bit set to 1 in the position 
+corresponding to a given flag in the [KeyFlags](#keyflags) flagset.
+
+**Contents**
+`CTRL` - **Ctrl** key state
+`SHIFT` - Shift** key state
+`ALT` - **Alt** key state
+`CAPSLOCK` - **Caps Lock** state
+`NUMLOCK` - **Num Lock** state
+`INSERT` - **Insert mode** state
+`SIDE` - Which side the key was on (if applicable) - 0 is left, 1 is right
+`SIDED` - Whether or not the key side matters - always 1 for keys which appear on both sides of the keyboard, otherwise 0
