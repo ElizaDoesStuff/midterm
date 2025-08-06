@@ -1,9 +1,9 @@
 #include "../Include/midterm.h"
 
-enum class Keys {
+enum class Keys { 
 	BACKSPACE, SPACE, CLEAR, ENTER, TAB, 
-	SHIFT, LSHIFT, RSHIFT,
-	CTRL, LCTRL, RCTRL,
+	SHIFT, LSHIFT, RSHIFT, 
+	CTRL, LCTRL, RCTRL, 
 	ALT, LALT, RALT,
 	EXIT, BREAK, ESC, 
 	PGUP, PGDOWN, END, HOME, 
@@ -26,6 +26,18 @@ enum class KeyActions {
 	RELEASE,
 	REPEAT
 };
+
+// Because enums are stupid and both of them use :: so nobody will know the difference :3
+namespace KeyFlagBits {
+	constexpr unsigned char CTRL = 0b10000000;
+	constexpr unsigned char SHIFT = 0b01000000;
+	constexpr unsigned char ALT = 0b00100000;
+	constexpr unsigned char CAPSLOCK = 0b00010000;
+	constexpr unsigned char NUMLOCK = 0b00001000;
+	constexpr unsigned char INSERT = 0b00000100;
+	constexpr unsigned char SIDE = 0b00000010;
+	constexpr unsigned char SIDED = 0b00000001;
+}
 
 static KeyCallback keyCallback;
 
@@ -89,6 +101,7 @@ void set_key_callback(KeyCallback callback) {
 static void handle_key_event(KEY_EVENT_RECORD event) {
 	if (keyCallback == nullptr) return;
 	
+	if (keyCodeMap.find(event.wVirtualKeyCode) == keyCodeMap.end()) return;
 	Keys key = keyCodeMap[event.wVirtualKeyCode];
 
 	KeyActions action;
@@ -107,19 +120,32 @@ static void handle_key_event(KEY_EVENT_RECORD event) {
 		default:
 			key_states[keyCodeMap[event.wVirtualKeyCode]] = event.bKeyDown;
 	}
+	key_states[Keys::LCTRL] = GetKeyState(VK_LCONTROL);
+	key_states[Keys::RCTRL] = GetKeyState(VK_RCONTROL);
+	key_states[Keys::LSHIFT] = GetKeyState(VK_LSHIFT);
+	key_states[Keys::RSHIFT] = GetKeyState(VK_RSHIFT);
+	key_states[Keys::LALT] = GetKeyState(VK_LMENU);
+	key_states[Keys::RALT] = GetKeyState(VK_RMENU);
 	
-	KeyFlags flags = 0b00000000;
-	flags |= 0b10000000 * key_states[Keys::CTRL];
-	flags |= 0b01000000 * key_states[Keys::ALT];
-	flags |= 0b00100000 * key_states[Keys::SHIFT];
-	flags |= 0b00010000 * key_states[Keys::CAPSLOCK];
-	flags |= 0b00001000 * key_states[Keys::NUMLOCK];
-	flags |= 0b00000100 * key_states[Keys::INSERT];
+	KeyFlags flags = KeyFlagBits::SIDED;
+	flags |= KeyFlagBits::CTRL * key_states[Keys::CTRL];
+	flags |= KeyFlagBits::ALT * key_states[Keys::ALT];
+	flags |= KeyFlagBits::SHIFT * key_states[Keys::SHIFT];
+	flags |= KeyFlagBits::CAPSLOCK * key_states[Keys::CAPSLOCK];
+	flags |= KeyFlagBits::NUMLOCK * key_states[Keys::NUMLOCK];
+	flags |= KeyFlagBits::INSERT * key_states[Keys::INSERT];
 	switch (key) {
-		case Keys::SHIFT: flags |= 0b00000010 * GetKeyState(VK_RSHIFT); break;
-		case Keys::CTRL: flags |= 0b00000010 * GetKeyState(VK_RCONTROL); break;
-		case Keys::ALT: flags |= 0b00000010 * GetKeyState(VK_RMENU); break;
-		case Keys::INSERT: flags |= 0b00000010 * !key_states[Keys::NUMLOCK];
+		case Keys::SHIFT:
+			if (GetKeyState(VK_LSHIFT))  { flags &= !KeyFlagBits::SIDE; }
+			else if (GetKeyState(VK_RSHIFT))  { flags |= KeyFlagBits::SIDE; }
+			break;
+		case Keys::CTRL: 
+			flags |= KeyFlagBits::SIDE * GetKeyState(VK_RCONTROL);
+			break;
+		case Keys::ALT: 
+			flags |= KeyFlagBits::SIDE * GetKeyState(VK_RMENU); break;
+		default: 
+			flags &= ~KeyFlagBits::SIDED;
 	}
 
 	keyCallback(action, key, flags);
