@@ -3,6 +3,15 @@
 # About Midterm
 A thin, soon-to-be-cross-platform abstraction layer written in C++ for console stuff such as keyboard and window events, ANSI, and more.
 
+## Table of Contents
+[Cross-Platform Support Progress](#cross-platform-support-progress)
+
+[Installation](#installation)
+
+[How To Use Midterm](#how-to-use-midterm)
+
+[Documentation] (#documentation)
+
 ## Cross-Platform Support Progress:
 
 Windows: 🟩
