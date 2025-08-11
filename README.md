@@ -1,3 +1,5 @@
+# This Project is on hold until future notice.
+
 *Note: Midterm is still very much a work in progress and is in no way complete in its current state. All features are subject to change.*
 
 # About Midterm
